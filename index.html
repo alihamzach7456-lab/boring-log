@@ -3,65 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eid Gift for Madam Ji ✨</title>
+    <title>For My Madam Ji ✨</title>
     <style>
         body {
             margin: 0;
             background-color: #050505;
-            color: #d4af37;
-            font-family: 'Georgia', serif;
+            color: #00ffcc; /* Hacker style start */
+            font-family: 'Courier New', monospace;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            cursor: pointer;
         }
 
-        #canvas {
+        #terminal {
+            width: 80%;
+            max-width: 600px;
+            z-index: 10;
+        }
+
+        .heart-tree-container {
             position: absolute;
             bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        canvas {
+            position: absolute;
+            bottom: 0;
+        }
+
+        .moon {
+            position: absolute;
+            bottom: -100px;
             left: 50%;
             transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            box-shadow: 15px 15px 0 0 #d4af37;
+            transition: all 4s ease-out;
+            opacity: 0;
         }
 
-        .overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 100;
-            transition: opacity 1s;
-        }
-
-        .message-box {
+        .eid-message {
             position: absolute;
-            left: 5%;
             top: 20%;
+            left: 10%;
             width: 300px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-left: 3px solid #d4af37;
-            border-radius: 0 15px 15px 0;
+            color: #f1e5ac;
+            font-family: 'Georgia', serif;
             display: none;
-            box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
+            z-index: 20;
+            background: rgba(0,0,0,0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #d4af37;
         }
 
-        .click-hint {
-            font-size: 1.5rem;
-            color: #d4af37;
-            border: 2px solid #d4af37;
-            padding: 10px 20px;
-            border-radius: 50px;
-            animation: pulse 2s infinite;
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background: #d4af37;
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="terminal"></div>
+
+    <div class="moon" id="moon"></div>
+    <div class="heart-tree-container" id="mainScene">
+        <canvas id="treeCanvas"></canvas>
+    </div>
+
+    <div class="eid-message" id="msgBox">
+        <div id="typing-text"></div><span class="cursor"></span>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const moon = document.getElementById('moon');
+        const mainScene = document.getElementById('mainScene');
+        const msgBox = document.getElementById('msgBox');
+        const typingText = document.getElementById('typing-text');
+
+        // Hacker Style Intro Lines
+        const lines = [
+            "> Initializing Eid special module...",
+            "> Loading Madam Ji's surprise...",
+            "> Calculating moon position...",
+            "> Status: Moon sighted! 🌙",
+            "> Executing 'Make_Her_Smile.exe'...",
+            "> Success! Opening magic..."
+        ];
+
+        let lineIdx = 0;
+        function showTerminal() {
+            if (lineIdx < lines.length) {
+                terminal.innerHTML += `<p>${lines[lineIdx]}</p>`;
+                lineIdx++;
+                setTimeout(showTerminal, 1000);
+            } else {
+                setTimeout(startMagic, 1000);
+            }
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+        function startMagic() {
+            terminal.style.display = 'none';
+            // Moon rises
+            moon.style.opacity = '1';
+            moon.style.bottom = '70%';
+            
+            setTimeout(() => {
+                mainScene.style.display = 'flex';
+                initTree();
+                setTimeout(startTyping, 2500);
+            }, 1000);
         }
 
-        #typing-text {
-            font-size: 1.
+        // Tree Logic
+        const canvas = document.getElementById('treeCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function drawHeart(x, y, size, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.bezierCurveTo(x, y-size/2, x-size, y-size/2, x-size, y);
+            ctx.bezierCurveTo(x-size, y+size/1.5, x, y+size*1.5, x, y+size*2);
+            ctx.bezierCurveTo(x, y+size*1.5, x+size, y+size/1.5, x+size, y);
+            ctx.bezierCurveTo(x+size, y-size/2, x, y-size/2, x, y);
+            ctx.fill();
+        }
+
+        function growTree(x, y, len, angle, width) {
+            ctx.beginPath();
+            ctx.save();
+            ctx.strokeStyle = "#3d2516";
+            ctx.lineWidth = width;
+            ctx.translate(x, y);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -len);
+            ctx.stroke();
+
+            if (len < 12) {
+                const colors = ['#ff4d6d', '#ff758f', '#d4af37', '#ffd700'];
+                drawHeart(0, -len, 10, colors[Math.floor(Math.random()*colors.length)]);
+                ctx.restore();
+                return;
+            }
+
+            setTimeout(() => {
+                growTree(0, -len, len * 0.75, angle - 22, width * 0.7);
+                growTree(0, -len, len * 0.75, angle + 22, width * 0.7);
+            }, 100);
+            ctx.restore();
+        }
+
+        function initTree() {
+            growTree(canvas.width/2, canvas.height, 120, 0, 12);
+        }
+
+        function startTyping() {
+            msgBox.style.display = 'block';
+            const msg = "🌙 Eid Mubarak, Madam Ji! ❤️\n\nAap is chand ki tarah hamesha chamakti rahein.\n\nMeri har Eid sirf aapki khushi se judi hai.\n\nHope you love this little surprise! ✨🌹";
+            let i = 0;
+            function type() {
+                if (i < msg.length) {
+                    typingText.innerHTML += msg.charAt(i) === '\n' ? '<br>' : msg.charAt(i);
+                    i++;
+                    setTimeout(type, 70);
+                }
+            }
+            type();
+        }
+
+        showTerminal();
+    </script>
+</body>
+</html>
